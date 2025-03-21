@@ -14,6 +14,7 @@ ripgrep \
 flameshot \
 libreoffice-still \
 libreoffice-still-zh-cn \
+vlc \
 git \
 less \
 steam \

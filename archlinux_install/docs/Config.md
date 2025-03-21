@@ -166,7 +166,7 @@ su [用户名]
 sudo systemctl enable sddm
 reboot
 ```
-    进入sddm界面，选择hyprland（wayland）,输入密码，桌面环境。
+    进入sddm界面，选择hyprland,输入密码，桌面环境。
 
 2. (必须，hyprland.conf中有一些环境配置) 拷贝仓库配置文件
 
