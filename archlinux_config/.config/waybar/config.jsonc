@@ -1,0 +1,105 @@
+//[
+{
+  // "output": "HDMI-A-1"
+  "output": "eDP-1",
+  "position": "top",
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": [
+    "tray",
+    "network",
+    "cpu",
+    "memory",
+    "pulseaudio#sink",
+    "custom/mic",
+    "bluetooth",
+    "backlight",
+    "battery",
+    "custom/power"
+  ],
+  "clock": {
+    "interval": 30,
+    "tooltip": false,
+    "format": "  {:%A %H:%M}",
+    "format-alt": "  {:%Y/%m/%d}"
+  },
+  "network": {
+    "interval": 3,
+    "interface": "wlp0s20f3",
+    "format-wifi": "[  {bandwidthDownBits}  {bandwidthUpBits} ]",
+    "tooltip-format": "<b>WLAN:\t{ifname}\nIP:\t\t\t{ipaddr}\nWIFI:\t\t{essid} ({signalStrength}%)</b>",
+    "format-disconnected": "[    Disconnected ]"
+  },
+  "cpu": {
+    "interval": 10,
+    "format": "[   {usage} ]",
+  },
+  "memory": {
+    "interval": 10,
+    "tooltip": false,
+    "format": "[   {used} ]",
+  },
+  "pulseaudio#sink": {
+    // "interval": 10,
+    "tooltip": false,
+    "format-icons": ["", "", " "],
+    "format": "[ {icon}  {volume} ]",
+    "format-muted": "[   {volume} ] ]",
+    "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "custom/mic": {
+    "interval": 30,
+    "tooltip": false,
+    "exec": "bash ~/.config/waybar/scripts/mic-volume.sh",
+    "return-type": "json",
+    "format": "[ {text} ]",
+    "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%-",
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+  },
+  "bluetooth": {
+    // "interval": 10,
+    "format": "[  {status} ]",
+    "format-connected": "[  On ]",
+    "format-connected-battery": "[  On {device_battery_percentage}% ]",
+    "format-disabled": "[ 󰂲 ]",
+    "format-no-controller": "[ 󰂲 ]",
+    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\nConnected Devices:\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "↳ {device_alias}\t{device_address}",
+    "tooltip-format-enumerate-connected-battery": "↳ {device_alias}\t{device_address}\t{device_battery_percentage}%",
+    "on-click": "rfkill unblock bluetooth",
+    "on-click-middle": "blueberry",
+    "on-click-right": "rfkill block bluetooth"
+  },
+  "backlight": {
+    // "interval": 10,
+    "tooltip": false,
+    "format": "[   {percent} ]",
+    "on-scroll-up": "light -A 5",
+    "on-scroll-down": "light -U 5"
+  },
+  "battery": {
+    "interval": 120,
+    "format": "[    {capacity} ]",
+    "tooltip-format": "{time}"
+  },
+  "tray": {
+    "interval": 30,
+    "spacing": 8
+  },
+  "custom/power": {
+		"tooltip": false,
+    "format" : "[   ]",
+    "on-click": "wlogout --protocol layer-shell"
+  }
+}
+// ,{
+//   "output": "HDMI-A-1",
+//   "position": "top",
+//   "modules-left": ["hyprland/workspaces"],
+//   "modules-center": ["hyprland/window"]
+// }
+//]

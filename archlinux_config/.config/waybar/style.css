@@ -1,0 +1,31 @@
+@define-color primary #fff;
+@define-color white #fff;
+@define-color black #000;
+/*@define-color warning #cc241d;*/
+/*@define-color critical #d79921;*/
+@define-color background rgba(0,0,0,0.5);
+
+#waybar {
+    color: @primary;
+    background-color: @background;
+}
+
+#workspaces button {
+    color: @primary;
+}
+
+#workspaces button.active {
+    color: @black;
+    background-color: @white;
+}
+/**/
+/*#cpu.warning,*/
+/*#memory.warning {*/
+/*    color: @warning;*/
+/*}*/
+/**/
+/*#cpu.critical,*/
+/*#memory.critical {*/
+/*    color: @critical;*/
+/*}*/
+

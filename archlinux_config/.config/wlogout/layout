@@ -1,0 +1,30 @@
+{
+    "label" : "lock",
+    "action" : "hyprlock > /dev/null 2>&1 &",
+    "text" : "锁屏",
+}
+{
+    "label" : "hibernate",
+    "action" : "systemctl hibernate",
+    "text" : "冬眠(no-use)",
+}
+{
+    "label" : "logout",
+    "action" : "loginctl terminate-user $USER",
+    "text" : "注销",
+}
+{
+    "label" : "shutdown",
+    "action" : "systemctl poweroff",
+    "text" : "关机",
+}
+{
+    "label" : "suspend",
+    "action" : "systemctl suspend",
+    "text" : "暂停",
+}
+{
+    "label" : "reboot",
+    "action" : "systemctl reboot",
+    "text" : "重启",
+}
