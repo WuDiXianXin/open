@@ -18,7 +18,7 @@
 ### 二、安装必要软件包
 - **安装核心组件**  
    ```bash
-   sudo pacman -S qemu-desktop libvirt virt-manager virt-viewer ebtables iptables-nft dnsmasq bridge-utils openbsd-netcat ovmf
+   sudo pacman -S qemu-desktop libvirt virt-manager virt-viewer dmidecode ebtables iptables-nft dnsmasq bridge-utils openbsd-netcat ovmf
    ```
 ---
 ### 三、配置服务与用户权限
