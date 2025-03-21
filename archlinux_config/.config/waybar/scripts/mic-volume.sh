@@ -8,7 +8,7 @@ volumet=$(echo "$volume_data" | awk '/Volume: ([0-9.]+)/ { printf "%.0f", $2 * 1
 
 # 检查是否静音
 if echo "$volume_data" | rg -q '\[MUTED\]'; then
-  echo '{"text":" ", "class":"muted"}'
+  echo "  $volumet"
 else
-  echo "{\"text\":\" $volumet\", \"class\":\"active\"}"
+  echo " $volumet"
 fi

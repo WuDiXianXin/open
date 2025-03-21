@@ -8,8 +8,9 @@
   "modules-right": [
     "tray",
     "network",
-    "cpu",
+    "custom/gpu",
     "memory",
+    "custom/cpu",
     "pulseaudio#sink",
     "custom/mic",
     "bluetooth",
@@ -23,6 +24,10 @@
     "format": "  {:%A %H:%M}",
     "format-alt": "  {:%Y/%m/%d}"
   },
+  "tray": {
+    "interval": 30,
+    "spacing": 8
+  },
   "network": {
     "interval": 3,
     "interface": "wlp0s20f3",
@@ -30,21 +35,31 @@
     "tooltip-format": "<b>WLAN:\t{ifname}\nIP:\t\t\t{ipaddr}\nWIFI:\t\t{essid} ({signalStrength}%)</b>",
     "format-disconnected": "[    Disconnected ]"
   },
-  "cpu": {
-    "interval": 10,
-    "format": "[   {usage} ]",
+  "custom/gpu": {
+    "format": "[ {} ]",
+    "interval": 5,
+    "tooltip": false,
+    "exec": "~/.config/waybar/scripts/gpu.sh",
+    "return-type": "text"
+  },
+  "custom/cpu": {
+    "format": "[ {} ]",
+    "interval": 5,
+    "tooltip": false,
+    "exec": "~/.config/waybar/scripts/cpu.sh",
+    "return-type": "text"
   },
   "memory": {
     "interval": 10,
     "tooltip": false,
-    "format": "[   {used} ]",
+    "format": "[   {percentage}%    {swapPercentage}% ]"
   },
   "pulseaudio#sink": {
     // "interval": 10,
     "tooltip": false,
     "format-icons": ["", "", " "],
-    "format": "[ {icon}  {volume} ]",
-    "format-muted": "[   {volume} ] ]",
+    "format": "[ {icon}  {volume}% ]",
+    "format-muted": "[  {volume}% ] ]",
     "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
     "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
@@ -53,8 +68,8 @@
     "interval": 30,
     "tooltip": false,
     "exec": "bash ~/.config/waybar/scripts/mic-volume.sh",
-    "return-type": "json",
-    "format": "[ {text} ]",
+    "return-type": "text",
+    "format": "[ {}% ]",
     "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+",
     "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%-",
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
@@ -77,18 +92,14 @@
   "backlight": {
     // "interval": 10,
     "tooltip": false,
-    "format": "[   {percent} ]",
+    "format": "[   {percent}% ]",
     "on-scroll-up": "light -A 5",
     "on-scroll-down": "light -U 5"
   },
   "battery": {
     "interval": 120,
-    "format": "[    {capacity} ]",
+    "format": "[    {capacity}% ]",
     "tooltip-format": "{time}"
-  },
-  "tray": {
-    "interval": 30,
-    "spacing": 8
   },
   "custom/power": {
 		"tooltip": false,
