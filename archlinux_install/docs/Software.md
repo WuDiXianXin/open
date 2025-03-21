@@ -5,6 +5,13 @@ paru -S \
 fastfetch \
 p7zip \
 fd \
+luajit \
+neovim \
+eza \
+fzf \
+zoxide \
+ripgrep \
+flameshot \
 libreoffice-still \
 libreoffice-still-zh-cn \
 git \
@@ -51,7 +58,7 @@ git init
 touch README.md
 git add README.md
 git commit -m "first commit"
-git remote add origin git@gitee.com:xxx/open.git
+git remote add origin git@gitee.com:[你的用户名]/open.git
 git push -u origin "master"
 
 

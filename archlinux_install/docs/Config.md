@@ -144,29 +144,19 @@ foot \
 fuzzel \
 swaync \
 waybar \
-qt5-base \
-qt6-base \
-qt5-tools \
-qt6-tools \
-qt5-wayland \
-qt6-wayland \
-gtk3 \
-gtk4 \
+qt5-base qt6-base \
+qt5-tools qt6-tools \
+qt5-wayland qt6-wayland \
+libxcb xcb-util xcb-util-wm \
+gtk3 gtk4 \
 xdg-utils \
 xdg-desktop-portal-hyprland \
 xdg-desktop-portal-gtk \
 kde-gtk-config \
-flameshot \
 fcitx5-im \
 fcitx5-chinese-addons \
 fcitx5-pinyin-zhwiki \
 rime-pinyin-zhwiki \
-luajit \
-neovim \
-eza \
-fzf \
-zoxide \
-ripgrep \
 
 ```
 ### 切换到普通用户，进入桌面环境，普通用户登录，进行配置
