@@ -91,7 +91,7 @@ nano /etc/pacman.conf
 ```
 2. 安装 dkms 和 nvidia-dkms以及相应工具和包
 ```bash
-pacman -S dkms nvidia-dkms nvidia-utils nvidia-settings nvidia-prime lib32-nvidia-utils
+pacman -S dkms nvidia-dkms nvidia-utils nvidia-settings nvidia-prime lib32-nvidia-utils libva-mesa-driver vulkan-icd-loader
 ```
 3. 注意事项：
     (不要安装nvidia这个包，也不需要其他几个包nvidia-（drm、modeset、uvm），
