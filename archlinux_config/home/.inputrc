@@ -1,0 +1,13 @@
+# 补全忽略大小写
+set completion-ignore-case on
+# TAB 显示候选项
+set show-all-if-ambiguous on
+# 自动补全软链接目录斜杠
+set mark-symlinked-directories on
+# 显示补全前缀
+set menu-complete-display-prefix on
+TAB:menu-complete
+# 彩色分类提示
+set colored-stats on
+# 显示文件类型标记
+set visible-stats on
