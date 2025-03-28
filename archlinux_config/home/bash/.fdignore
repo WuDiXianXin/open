@@ -1,0 +1,13 @@
+/tmp/
+/var/tmp/
+/var/log/
+/var/cache/pacman/pkg/
+**/.cache/
+**/cache/
+**/.git/
+**/node_modules/
+**/__pycache__/
+**/target/
+*.bak
+*.log
+*.tmp
