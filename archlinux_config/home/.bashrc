@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # ========== 基础设置 ==========
+if [[ -n "${BASHRC_LOADED}" ]]; then
+  return
+fi
+export BASHRC_LOADED=1
 [[ $- != *i* ]] && return
 BASH_LOAD_START=$(date +%s%3N)
 # ========== 历史记录增强 ==========

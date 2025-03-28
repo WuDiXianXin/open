@@ -22,4 +22,5 @@ for dir in "${config_dirs[@]}"; do
 done
 
 rsync ~/.bashrc "$dest_home/"
+rsync ~/.bash_profile "$dest_home/"
 rsync ~/.inputrc "$dest_home/"
