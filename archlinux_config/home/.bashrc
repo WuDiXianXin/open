@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 # ========== 基础设置 ==========
-if [[ -n "${BASHRC_LOADED}" ]]; then
-  return
-fi
-export BASHRC_LOADED=1
 [[ $- != *i* ]] && return
 BASH_LOAD_START=$(date +%s%3N)
 # ========== 历史记录增强 ==========
@@ -17,7 +13,7 @@ PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 # ========== 工具集成 ==========
 source /usr/share/bash-completion/bash_completion
-source ~/make/ble.sh/out/ble.sh
+# source ~/make/ble.sh/out/ble.sh
 source /usr/share/fzf/{key-bindings,completion}.bash
 eval "$(direnv hook bash)"
 eval "$(starship init bash)"

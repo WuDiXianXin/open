@@ -3,6 +3,8 @@
 /var/log/
 /var/cache/pacman/pkg/
 **/.cache/
+**/.cargo/
+**/.rustup/
 **/cache/
 **/.git/
 **/node_modules/

@@ -6,6 +6,7 @@ dest_config="archlinux_config/.config"
 dest_home="archlinux_config/home"
 
 config_dirs=(
+  fish
   hypr
   hyprshot
   foot
