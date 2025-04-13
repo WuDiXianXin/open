@@ -1,13 +1,11 @@
 {
-    "positionX": "right",
-    "positionY": "top",
-    "timeout": 25000,
-    "timeout-low": 30000,
-    "max-length": 0,
-    "history-size": 30,
-    "control-center-margin": 10,
-    "widgets": [
-        "title",
-        "notifications"
-    ]
+  "positionX": "right",
+  "positionY": "top",
+  "timeout": 15,
+  "timeout-low": 20,
+  "history-size": 30,
+  "widgets": [
+    "title",
+    "notifications"
+  ]
 }
