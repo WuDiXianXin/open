@@ -7,6 +7,8 @@ if status is-interactive
     set -g fish_cursor_insert line
     set -gx EDITOR nvim
     set -gx VISUAL nvim
+    bind --mode insert \ce fish_edit_commandline
+    bind --mode default v fish_edit_commandline
     # ========== 路径管理 ==========
     # 加载 Cargo 环境
     set -q CARGO_HOME || set CARGO_HOME $HOME/.cargo
