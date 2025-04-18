@@ -48,9 +48,9 @@
    unix_sock_group = "libvirt"
    unix_sock_rw_perms = "0770"
    ```
-4. **启动并启用 libvirtd 和 virtlogd 以及 dnsmasq 服务**  
+4. **启动并启用 libvirtd 和 virtlogd 服务，不要开机自启 dnsmasq 服务，因为 libvirt 在创建和开启虚拟机时自动实例化一个 dnsmasq 进程**  
    ```bash
-   sudo systemctl enable --now libvirtd virtlogd dnsmasq
+   sudo systemctl enable --now libvirtd virtlogd
    ```
 
 ---
