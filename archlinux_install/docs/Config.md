@@ -259,16 +259,18 @@ sudo systemctl status bluetooth
 ```bash
 sudo pacman -S \
 sof-firmware \
-alsa-utils \
-alsa-firmware \
-alsa-plugins \
-alsa-tools \
-libcamera \
+#alsa-utils \
+#alsa-firmware \
+#alsa-plugins \
+#alsa-tools \
+#libcamera \
 pipewire \
 pipewire-pulse \
 pipewire-alsa \
 pipewire-jack \
-wireplumber
+wireplumber \
+pavucontrol \
+#EasyEffects
 ```
 
 ```bash
