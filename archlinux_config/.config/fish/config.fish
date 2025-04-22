@@ -25,31 +25,4 @@ if status is-interactive
     alias rmd="trash-put"
     alias rmy="command rm -f"
 
-    # 定义启动 Kitty 的函数
-    function kittyx
-        set -e WAYLAND_DISPLAY
-        kitty >/dev/null 2>&1 &
-    end
-
-    # 定义启动 OBS 的函数
-    function obsx
-        set -e WAYLAND_DISPLAY
-        set QT_QPA_PLATFORM xcb
-        obs >/dev/null 2>&1 &
-    end
-
-    # 定义启动 virt-manager 的函数
-    function virtx
-        set -e WAYLAND_DISPLAY
-        set QT_QPA_PLATFORM xcb
-        virt-manager >/dev/null 2>&1 &
-    end
-
-    # 定义启动 fcitx5 的函数
-    function fcitx5x
-        set -e WAYLAND_DISPLAY
-        set QT_QPA_PLATFORM xcb
-        killall fcitx5
-        fcitx5 >/dev/null 2>&1 &
-    end
 end
