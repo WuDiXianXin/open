@@ -17,6 +17,12 @@ lto = "fat"                 # 链接时优化
 ```
 
 ```bash
+cargo install sccache
+# paru -S sccache
+cargo install cargo-chef
+```
+
+```bash
 # 初始化或依赖变更时
 cargo chef prepare --recipe-path recipe.json
 cargo chef cook --recipe-path recipe.json
