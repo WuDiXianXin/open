@@ -1,5 +1,39 @@
 # 配置方案
 
+```toml
+[profile.dev]
+debug = true                # 保留调试信息
+incremental = true          # 启用增量编译
+codegen-units = 16          # 多单元并行编译
+opt-level = 0               # 不优化（加速编译）
+
+[profile.release]
+debug = false               # 移除调试信息
+incremental = false         # 禁用增量编译（节省磁盘空间）
+codegen-units = 1           # 最大优化
+opt-level = 3               # 最高优化级别
+strip = true                # 剥离符号表
+lto = "fat"                 # 链接时优化
+```
+
+```bash
+# 初始化或依赖变更时
+cargo chef prepare --recipe-path recipe.json
+cargo chef cook --recipe-path recipe.json
+
+# 日常开发
+cargo build  # 快速增量编译
+```
+
+```bash
+# 生成食谱文件
+cargo chef prepare --recipe-path recipe.json
+# 预编译依赖
+cargo chef cook --release --recipe-path recipe.json
+# 正常编译项目
+cargo build --release
+```
+
 ## sccache使用方法
 
 ```fish
