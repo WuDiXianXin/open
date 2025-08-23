@@ -183,9 +183,43 @@ paru -S ttf-font-awesome
 sudo fc-cache -f -v
 ```
 
-### 安装终端模拟器（桌面环境需要）
+### 安装桌面环境以及一些软件
 
-安装并配置kitty 或者 foot
+直接用 `gnome` 省事了
+
+1. gnome
+```bash
+paru -S \
+gnome \
+wl-clipboard \
+fcitx5-im \
+fcitx5-chinese-addons \
+fcitx5-pinyin-zhwiki \
+rime-pinyin-zhwiki
+
+sudo systemctl enable gdm
+```
+
+2. hyprland
+```bash
+paru -S \
+hyprland \
+waybar \
+wl-clipboard \
+libnotify \
+xdg-desktop-portal-hyprland \
+fcitx5-im \
+fcitx5-chinese-addons \
+fcitx5-pinyin-zhwiki \
+rime-pinyin-zhwiki
+```
+
+### 安装终端模拟器(如果选 gnome 跳过)
+
+如果不安装gnome、kde等桌面环境，
+而是窗口管理器如hyprland、sway、niri、i3等需要终端模拟器。
+
+安装并配置kitty 或者 foot（wayland）
 
 ```bash
 paru -S kitty
@@ -200,25 +234,18 @@ encoding utf-8
 pango_markup yes
 ```
 
-### 安装桌面环境以及一些软件
-
-我安装的是 hyprland
-
-```bash
-paru -S \
-hyprland \
-waybar \
-wl-clipboard \
-libnotify \
-xdg-desktop-portal-hyprland \
-fcitx5-im \
-fcitx5-chinese-addons \
-fcitx5-pinyin-zhwiki \
-rime-pinyin-zhwiki
-```
-
 ### 进入桌面环境
 
+1. gnome
+```bash
+# 重启后
+reboot
+# 或者
+sudo systemctl start gdm
+# 选择桌面环境，输入密码，自动进入
+```
+
+2. hyprland
 ```bash
 hyprland
 ```
@@ -231,6 +258,13 @@ fcitx5-configtool
 
 #### 蓝牙
 
+1. gnome
+```bash
+sudo systemctl enable --now bluetooth
+sudo systemctl status bluetooth
+```
+
+2. hyprland
 ```bash
 sudo pacman -S bluez bluez-utils blueberry
 sudo systemctl enable --now bluetooth
