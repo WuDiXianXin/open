@@ -243,6 +243,7 @@ echo 'ZhuJiMing' > /etc/hostname
 
 #### 编辑/etc/hosts文件，添加以下内容
 
+1. 方法一：
 ```bash
 nano /etc/hosts
 ```
@@ -251,6 +252,11 @@ nano /etc/hosts
 127.0.0.1   localhost
 ::1         localhost
 127.0.1.1   ZhuJiMing.localdomain ZhuJiMing
+```
+
+2. 方法二：
+```bash
+echo "127.0.1.1   ZhuJiMing.localdomain ZhuJiMing" >> /etc/hosts
 ```
 
 ```
