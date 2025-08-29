@@ -155,26 +155,12 @@ mesa vulkan-icd-loader
 reboot
 ```
 
+### 字体
+
 ### 安装字体
 
-#### noto 系列字体
-
 ```bash
-# paru -S noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra
-paru -S ttf-nerd-fonts-symbols noto-fonts-emoji
-```
-
-#### Maple Mono (Normal) NF CN 字体
-
-```bash
-# paru -S ttf-maplemononormal-nf-cn
-paru -S ttf-maplemono-nf-cn
-```
-
-#### awesome 字体
-
-```bash
-paru -S ttf-font-awesome
+paru -S ttf-maplemono-nf-cn otf-noto-sans-cjk-vf noto-fonts-emoji ttf-jetbrains-mono-nerd
 ```
 
 #### 刷新字体
