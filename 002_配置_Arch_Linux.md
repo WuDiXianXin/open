@@ -174,6 +174,7 @@ sudo fc-cache -f -v
 直接用 `gnome` 省事了
 
 1. gnome
+
 ```bash
 paru -S \
 gnome \
@@ -187,6 +188,7 @@ sudo systemctl enable gdm
 ```
 
 2. hyprland
+
 ```bash
 paru -S \
 hyprland \
@@ -194,6 +196,26 @@ waybar \
 wl-clipboard \
 libnotify \
 xdg-desktop-portal-hyprland \
+xdg-desktop-portal-gnome \
+xdg-desktop-portal-gtk\
+fcitx5-im \
+fcitx5-chinese-addons \
+fcitx5-pinyin-zhwiki \
+rime-pinyin-zhwiki
+```
+
+3. niri
+
+```bash
+paru -S \
+niri \
+xwayland-satellite \
+waybar \
+fuzzel \
+wl-clipboard \
+libnotify \
+xdg-desktop-portal-gnome \
+xdg-desktop-portal-gtk\
 fcitx5-im \
 fcitx5-chinese-addons \
 fcitx5-pinyin-zhwiki \
@@ -223,6 +245,7 @@ pango_markup yes
 ### 进入桌面环境
 
 1. gnome
+
 ```bash
 # 重启后
 reboot
@@ -232,6 +255,7 @@ sudo systemctl start gdm
 ```
 
 2. hyprland
+
 ```bash
 hyprland
 ```
@@ -245,12 +269,14 @@ fcitx5-configtool
 #### 蓝牙
 
 1. gnome
+
 ```bash
 sudo systemctl enable --now bluetooth
 sudo systemctl status bluetooth
 ```
 
-2. hyprland
+2. hyprland and niri
+
 ```bash
 sudo pacman -S bluez bluez-utils blueberry
 sudo systemctl enable --now bluetooth
