@@ -55,7 +55,7 @@ rustup default nightly  # 临时切换到nightly（部分工具如miri依赖）
 | 组件用途                | 安装命令                                  | 说明                                  |
 |-------------------------|-------------------------------------------|---------------------------------------|
 | 现代语言服务器（推荐）  | `rustup component add rust-analyzer`      | 为 IDE 提供补全、跳转等功能，替代 RLS |
-| 旧版语言服务器（废弃）  | `rustup component add rls`                | 已被 rust-analyzer 取代，不建议安装   |
+| Rust 标准库的源代码  | `rustup component add rust-src`                | rust-src 是提升 Rust 开发体验（尤其是 IDE 集成）的重要组件 |
 | GDB 调试适配            | `rustup component add rust-gdb`           | 配合 GDB 调试 Rust 程序               |
 | LLDB 调试适配            | `rustup component add rust-lldb`          | 配合 LLDB 调试 Rust 程序（macOS 推荐）|
 | 内存安全调试器          | `rustup component add miri`               | 需切换到 nightly 工具链（`rustup default nightly`） |
