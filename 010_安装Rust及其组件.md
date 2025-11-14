@@ -34,6 +34,7 @@ source $HOME/.cargo/env
 rustup install stable  # 安装稳定版工具链（包含上述核心工具）
 ```
 
+
 ## 三、安装额外组件（`rust-analyzer`、`rls`等）
 以下工具在 Linux标准版 中皆有，无需安装：
 
@@ -54,7 +55,14 @@ rustup component add miri           # 对应cargo-miri（Rust解释器/调试工
 ```
 
 
-## 四、安装cargo子命令（`cargo-chef`、`tauri`相关等）
+## 四、VScode(linux版)
+
+```bash
+code --install-extension rust-lang.rust-analyzer
+```
+
+
+## 五、安装cargo子命令（`cargo-chef`、`tauri`相关等）
 以下工具是`cargo`的扩展子命令，通过`cargo install`安装：
 
 ```bash
@@ -67,7 +75,7 @@ cargo install tauri-cli         # Tauri命令行工具（对应cargo-tauri）
 ```
 
 
-## 五、验证安装
+## 六、验证安装
 安装完成后，可以通过以下命令验证：
 ```bash
 rustc --version    # 检查rustc版本
