@@ -285,7 +285,7 @@ linux-wallpaperengine 1845706469
 linux-wallpaperengine ~/wallpaperengine/1845706469/
 
 # 示例
-linux-wallpaperengine --screen-root eDP-1 --fps 15 --scaling fill --volume 100 ~/wallpaperengine/3348083711/
+linux-wallpaperengine --screen-root eDP-1 --screen-root HDMI-A-1 --fps 15 --scaling fill ~/wallpaperengine/3625547979/
 ```
 
 ## 常见问题
