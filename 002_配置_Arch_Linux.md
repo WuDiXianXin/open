@@ -194,13 +194,13 @@ Include = /etc/pacman.d/mirrorlist
 ### 3.3 安装驱动及依赖
 
 ```bash
-sudo pacman -Sy dkms nvidia-dkms nvidia-utils \
+sudo pacman -Sy dkms nvidia-open-dkms nvidia-utils \
 nvidia-settings nvidia-prime lib32-nvidia-utils \
 mesa vulkan-icd-loader
 ```
 
 > 注意：
-> - 无需单独安装 nvidia、nvidia-drm、nvidia-modeset 等包，nvidia-dkms 已包含；
+> - 无需单独安装 nvidia、nvidia-drm、nvidia-modeset 等包，nvidia-open-dkms 已包含；
 > - nvidia-prime 用于笔记本切换核显/独显；
 > - lib32-nvidia-utils 为 32 位程序（如部分游戏）提供显卡支持。
 
