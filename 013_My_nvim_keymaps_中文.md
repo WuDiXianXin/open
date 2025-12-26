@@ -81,14 +81,10 @@
 | `<leader>rR`      | 重跑上一个 Runnable                        |                              |
 | `<leader>tt`      | 选择并运行测试                             | 测试                         |
 | `<leader>tT`      | 重跑上一个测试                             |                              |
-| `<leader>rd`      | 选择并调试 Debuggable                      | 调试                         |
-| `<leader>rD`      | 重跑上一个调试                             |                              |
 | `<leader>em`      | 递归展开宏                                 | 宏 & 结构                    |
 | `<leader>jl`      | 智能连接行                                 |                              |
-| `<leader>ss`      | 结构搜索替换 (SSR)                         |                              |
 | `<leader>ro`      | 打开 Cargo.toml                            | Cargo & 依赖                 |
 | `<leader>rc`      | 重载 Workspace                             |                              |
-| `<leader>cd`      | 查看 Crate 详情 (crates.io)                |                              |
 | `<leader>od`      | 打开 docs.rs 文档                          |                              |
 | `<leader>ee`      | 循环解释错误                               | 诊断 & 错误                  |
 | `<leader>rdg`     | 显示当前详细诊断                           |                              |
