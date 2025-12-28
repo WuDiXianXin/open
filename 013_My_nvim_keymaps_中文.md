@@ -11,7 +11,7 @@
 - **全局通用键位**：`lua/config/keymaps.lua`
 - **Rust 专用增强**：`after/ftplugin/rust.lua`（仅 Rust 文件生效，会覆盖部分全局键位以使用 rustaceanvim 更强大功能）
 - **Lua 开发专用**：`after/ftplugin/lua.lua`（仅 Lua 文件生效）
-- **插件内部键位**：DAP、crates.nvim、gitsigns.nvim、treesitter-textobjects 等
+- **插件内部键位**：DAP、crates.nvim、gitsigns.nvim、treesitter-textobjects、markview.nvim 等
 
 下面按功能分类，完整列出所有快捷键（包含键位、作用描述及来源），方便查阅和分享。
 
@@ -192,6 +192,13 @@ Git 变更操作，仅在 含有.git目录中的 文件中生效。
 - `g` → 跳转
 - `gr` → LSP 符号操作
 - `[` / `]` → 上/下一个
+
+### 9. Markview（lua/plugins/markview.lua）
+A hackable Markdown, HTML, LaTeX, Typst & YAML previewer for Neovim.
+
+- `<leader>M` → 全局完全开关 markview 渲染（包括所有缓冲区）
+- `<leader>m` → 只切换当前 Markdown 文件的渲染（最常用）
+- `<leader>ms` → 打开/关闭分屏实时预览（一边编辑，一边看美化效果，滚动同步）
 
 ### 总结
 - **全局 + LSP 通用**：`config/keymaps.lua`（基础编辑、窗口、诊断、Mini.pick 查找等）
