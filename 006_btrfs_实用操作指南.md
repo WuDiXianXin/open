@@ -1,203 +1,183 @@
 # Btrfs 实用操作指南
 
 > By WuDiXianXin
+
 ---
 
-Btrfs 是一种支持快照、子卷、增量备份等功能的高级文件系统，
-其“ Copy-on-Write ”特性使得存储效率更高——实际消耗的物理空间仅为文件变化后的差异部分，而非完整复制文件。
+Btrfs 是一种现代的 Copy-on-Write 文件系统，支持子卷（subvolume）、快照（snapshot）、压缩、RAID、校验和、自愈等功能。  
+其 CoW 特性使得快照和增量备份非常高效——快照创建几乎瞬间完成，实际新增物理空间仅为后续修改的差异部分。
 
-## 创建并挂载 Btrfs 分区、子卷
+## 子卷规划建议（最常见布局）
 
-子卷规划是 Btrfs 使用的基础，建议按以下方式命名子卷（便于管理和快照）：
+推荐的子卷命名（便于快照管理、与 snapper / timeshift / grub-btrfs 等工具兼容）：
 
-- `@`：对应根目录 `/`
-- `@home`：对应用户目录 `/home`
-- `@log`：对应日志目录 `/var/log`
-- `@cache`：对应缓存目录 `/var/cache`
-- `@snapshots`：用于集中存储所有快照（建议单独创建此子卷，挂载于 `/.snapshots`）
+- `@`          → 挂载为 `/` （根文件系统主体）
+- `@home`      → 挂载为 `/home`
+- `@log`       → 挂载为 `/var/log` （日志通常变化频繁，可不纳入根快照）
+- `@cache`     → 挂载为 `/var/cache` （缓存可丢弃，可不纳入快照）
+- `@snapshots` → 集中存放快照，挂载为 `/.snapshots` 或 `/.btrfs-snapshots`（**推荐使用点开头 `.snapshots` 以隐藏**）
 
-具体创建 和 挂载步骤 可参考我的开源仓库open中的
-[《001_安装_Arch_Linux.md》的 “btrfs 文件系统” 章节](https://gitee.com/wudixianxin/open/blob/main/001_安装_Arch_Linux.md)
+> 2025–2026 年社区最流行做法：根快照子卷用 `@`，快照存储用 `.snapshots`（点开头），与 openSUSE、Fedora Silverblue、Ubuntu 部分方案、Arch snapper 指南保持一致。
+
+创建与挂载详细步骤可参考  
+[《001_安装_Arch_Linux.md》 → “btrfs 文件系统” 章节](https://gitee.com/wudixianxin/open/blob/main/001_安装_Arch_Linux.md)
 
 ## 快照与备份、恢复
 
-### 创建可读快照
+### 创建快照（推荐始终创建只读快照）
 
-Btrfs 快照分为“可读快照”（ readonly ）和“可写快照”（默认），日常备份建议创建**可读快照**（加 `-r` 参数），避免误修改快照内容。
+日常备份**强烈建议**使用只读快照（`-r`），防止误操作修改历史版本。
+
+命名建议：`YYYYMMDD-HHMM_用途` 或 `YYYYMMDD-序号_用途`（方便排序）
 
 ```bash
-# 创建根目录（@子卷）的可读快照，命名格式建议包含日期+用途
-sudo btrfs subvolume snapshot -r / /.snapshots/20250816_root_snap
+# 示例：根子卷 (@) 的只读快照
+sudo btrfs subvolume snapshot -r / /.snapshots/$(date +%Y%m%d-%H%M)_root
 
-# 创建/home（@home子卷）的可读快照
-sudo btrfs subvolume snapshot -r /home /.snapshots/20250816_home_snap
+# 示例：home 子卷
+sudo btrfs subvolume snapshot -r /home /.snapshots/$(date +%Y%m%d-%H%M)_home
 ```
 
-成功执行后会显示类似提示：
-
+输出示例：
 ```
-create readonly snapshot of '/' in '/.snapshots/20250816_root_snap'
-create readonly snapshot of '/home' in '/.snapshots/20250816_home_snap'
+create readonly snapshot of '/' in '/.snapshots/20260120-1427_root'
 ```
 
-### 从快照中恢复
+**小技巧**：可写脚本自动化 + cron（或 systemd timer）定时创建。
 
-当系统出现问题（如误删文件、软件冲突）时，可通过快照恢复到之前的状态。
-**操作前建议先通过 `sudo btrfs subvolume list /` 确认子卷和快照的路径，避免误操作**。
+### 从快照回滚恢复（系统损坏时）
 
-#### 步骤
+**最安全方式**：使用 Arch/Linux live ISO 启动（自带 btrfs-progs）。
 
-1. **进入 Arch Linux 安装镜像**  
-   重启电脑，通过 Arch ISO 启动盘进入 live 环境（无需联网，ISO 自带 Btrfs 工具）。
-
-2. **挂载 Btrfs 分区**  
-   假设你的 Btrfs 分区为 `/dev/nvme0n1p2`（可通过 `lsblk` 确认），挂载到 `/mnt`：
+1. 确认分区（通常是根分区）
 
    ```bash
-   mount /dev/nvme0n1p2 /mnt
+   lsblk -f
    ```
 
-3. **恢复根目录（@子卷）**  
-   - 先删除损坏的 `@` 子卷（若删除失败，需先清空子卷内容）：
-
-     ```bash
-     # 尝试直接删除
-     btrfs subvolume delete /mnt/@
-
-     # 若报错 "ERROR: Could not destroy subvolume/snapshot: Directory not empty"
-     rm -rf /mnt/@/*  # 谨慎！确保目标是待删除的@子卷，而非其他重要数据
-     btrfs subvolume delete /mnt/@
-     ```
-
-   - 从快照重建 `@` 子卷：
-
-     ```bash
-     # 假设快照路径为 /mnt/@snapshots/20250816_root_snap（需根据实际快照位置调整）
-     btrfs subvolume snapshot /mnt/@snapshots/20250816_root_snap /mnt/@
-     ```
-
-4. **恢复 /home（@home子卷）**  
-   同理操作 `@home` 子卷：
+2. 挂载 Btrfs 文件系统（不指定 subvol，让它挂载默认 subvolume）
 
    ```bash
-   # 删除损坏的@home子卷
-   btrfs subvolume delete /mnt/@home
-
-   # 从快照重建@home子卷
-   btrfs subvolume snapshot /mnt/@snapshots/20250816_home_snap /mnt/@home
+   sudo mount /dev/nvme0n1p2 /mnt
    ```
 
-5. **重启系统**  
-   恢复完成后直接重启即可，无需修改 `fstab`（子卷挂载路径未变）：
+3. （可选）查看所有子卷/快照列表
 
    ```bash
+   sudo btrfs subvolume list /mnt
+   ```
+
+4. 恢复根子卷（@）示例
+
+   ```bash
+   # 先删除损坏的 @（如果 delete 失败，先清空内容）
+   sudo btrfs subvolume delete /mnt/@
+   # 或者先清空再删（更保险，但极度小心）
+   # sudo rm -rf /mnt/@/* /mnt/@/.[!.]*   # 千万确认路径！
+
+   # 从快照重建 @
+   sudo btrfs subvolume snapshot /mnt/.snapshots/20260120-1427_root /mnt/@
+   ```
+
+5. 同理处理 `@home`（如果也需要回滚）
+
+6. 卸载 & 重启
+
+   ```bash
+   sudo umount /mnt
    reboot
    ```
 
-### 导出快照为备份文件
+> **重要**：只要子卷名字和原来一样，`/etc/fstab` 无需修改（因为 subvol=@ 等选项不变）。
 
-通过 `btrfs send` 可将快照导出为独立的备份文件（二进制数据流），便于存储到外部设备或远程服务器。
-
-```bash
-# 导出根目录快照为备份文件
-sudo btrfs send /.snapshots/20250816_root_snap > /.snapshots/20250816_root.btrfs
-
-# 导出/home快照为备份文件
-sudo btrfs send /.snapshots/20250816_home_snap > /.snapshots/20250816_home.btrfs
-```
-
-#### 增量备份（节省空间）
-
-若后续需备份，可基于已有快照创建新快照，再通过 `-p` 参数导出差异部分（仅存储变化的数据）：
+### 挂载单个快照（只提取文件、不回滚整个系统）
 
 ```bash
-# 1. 基于旧快照创建新快照（以根目录为例）
-sudo btrfs subvolume snapshot -r / /.snapshots/20250817_root_snap
+sudo mkdir /mnt/snap
 
-# 2. 导出增量备份（-p 指定前序快照）
-sudo btrfs send -p /.snapshots/20250816_root_snap /.snapshots/20250817_root_snap > /.snapshots/20250817_root_incremental.btrfs
+# 方式1：直接用 subvol= 选项挂载特定快照
+sudo mount -t btrfs -o subvol=.snapshots/20260120-1427_root,ro \
+     /dev/nvme0n1p2 /mnt/snap
+
+# 方式2：如果已挂载根文件系统，可用 bind 方式（较少用）
+# sudo mount --bind /.snapshots/20260120-1427_root /mnt/snap
+
+# 用完记得卸载
+sudo umount /mnt/snap
 ```
 
-### 挂载快照（查看/提取文件）
-
-若无需恢复整个系统，仅需查看快照中的文件或提取单个文件，可直接挂载快照：
+### 删除不再需要的快照
 
 ```bash
-# 1. 创建挂载点
-sudo mkdir -p /mnt/btrfs_snap
-
-# 2. 查看所有子卷和快照（确认快照路径）
-sudo btrfs subvolume list /
-
-# 3. 挂载快照（以20250816_root_snap为例，btrfs 分区为/dev/nvme0n1p2）
-sudo mount -t btrfs -o subvol=@snapshots/20250816_root_snap /dev/nvme0n1p2 /mnt/btrfs_snap
-
-# 4. 操作完成后取消挂载
-sudo umount /mnt/btrfs_snap
+sudo btrfs subvolume delete /.snapshots/20260120-1427_root
 ```
 
-挂载后可通过 `/mnt/btrfs_snap` 访问快照中的文件，直接复制所需内容即可。
+**批量清理**建议写脚本或使用 snapper / btrbk 等工具自动管理保留策略。
 
-### 删除快照
+### 使用 `btrfs send | receive` 做备份 / 迁移
 
-若快照不再需要，可通过 `btrfs subvolume delete` 命令删除（**删除后无法恢复，需谨慎**）：
+**优点**：支持增量、保留 CoW 特性、校验和可靠  
+**缺点**：目标也必须是 Btrfs，操作稍复杂
+
+#### 完整备份（第一次）
 
 ```bash
-# 格式：sudo btrfs subvolume delete 快照实际路径
-sudo btrfs subvolume delete /.snapshots/20250816_root_snap
+# 源快照必须是只读的
+sudo btrfs send /.snapshots/20260120-1427_root > /path/to/external/20260120_root.btrfs
+# 或直接管道到 receive（推荐，节省本地空间）
+sudo btrfs send /.snapshots/20260120-1427_root | sudo btrfs receive /mnt/backup
 ```
 
-### 从备份文件中恢复
+#### 增量备份（后续）
 
-若已将快照导出为 `.btrfs` 备份文件（如迁移系统、硬盘更换场景），可通过 `btrfs receive` 命令恢复：
+```bash
+# 先创建新只读快照
+sudo btrfs subvolume snapshot -r / /.snapshots/$(date +%Y%m%d-%H%M)_root
 
-#### 恢复步骤
+# 增量发送（-p 指定共同祖先）
+sudo btrfs send -p /.snapshots/20260120-1427_root \
+     /.snapshots/20260121-0930_root \
+     | sudo btrfs receive /mnt/backup
+```
 
-1. **准备目标分区**  
-   确保目标 Btrfs 分区已挂载（假设挂载于 `/mnt`），并创建用于接收恢复数据的子卷：
+**常见错误提醒**：
 
-   ```bash
-   # 创建临时子卷用于接收恢复数据（例如恢复根目录快照）
-   sudo btrfs subvolume create /mnt/@_restore
-   ```
+- 增量发送时，**源和目标上必须存在相同的父快照**（即 -p 指定的快照也要在接收端存在）
+- 快照必须保持**只读**（否则 send 会失败或数据不一致）
+- 接收端路径通常是**已存在的普通目录**（receive 会自动在该目录下创建同名子卷）
 
-2. **恢复备份文件**  
-   使用 `btrfs receive` 将备份文件导入到目标子卷：
+#### 从备份文件恢复（迁移 / 换盘场景）
 
-   ```bash
-   # 格式：cat 备份文件 | sudo btrfs receive 目标子卷路径
-   cat /.snapshots/20250816_root.btrfs | sudo btrfs receive /mnt/@_restore
-   ```
-
-3. **增量备份的接收顺序**  
-   如果是恢复增量备份（使用 `-p` 参数生成的），必须**先恢复基础快照，再按顺序恢复增量快照**，否则会报错。
-
-   例如：
+1. 在目标机器挂载新的 Btrfs 分区到 `/mnt`
+2. 接收完整备份
 
    ```bash
-   # 先恢复基础快照
-   cat /.snapshots/20250816_root.btrfs | sudo btrfs receive /mnt
-
-   # 再恢复基于它的增量快照
-   cat /.snapshots/20250817_root_incremental.btrfs | sudo btrfs receive /mnt
+   sudo btrfs receive /mnt < /path/to/20260120_root.btrfs
+   # 或 cat 方式
+   cat 20260120_root.btrfs | sudo btrfs receive /mnt
    ```
 
-4. **替换原子卷**  
-   恢复完成后，删除原损坏的子卷，将恢复的子卷重命名为原名称（如 `@`）：
+3. 增量备份要**按顺序**依次接收（先基础 → 后增量）
+4. 接收完成后，将子卷重命名为 `@`（或你原来的名字）
 
    ```bash
-   # 删除原@子卷（需先确保未挂载，建议在live环境操作）
-   sudo btrfs subvolume delete /mnt/@
-
-   # 将恢复的子卷重命名为@
-   sudo btrfs subvolume rename /mnt/@_restore /mnt/@
+   sudo btrfs subvolume snapshot /mnt/20260120-1427_root /mnt/@
+   # 或直接 rename（视情况）
+   sudo btrfs subvolume delete /mnt/@    # 如果已有旧的
+   sudo btrfs subvolume rename /mnt/20260120-1427_root /mnt/@
    ```
 
-5. **重启系统**  
-   确认子卷名称正确后，重启即可完成恢复。
+### 其他实用命令速查
 
-**注意事项**：  
+- 查看空间使用：`sudo btrfs filesystem df /` / `sudo btrfs filesystem usage /`
+- 压缩整个文件系统：`sudo btrfs filesystem defragment -r -czstd /`
+-  scrub 检查数据完整性：`sudo btrfs scrub start /`
+- 查看属性（压缩、COW 等）：`sudo btrfs property get /path`
+- 设置默认子卷（很少需要）：`sudo btrfs subvolume set-default <subvolid> /`
 
-- 操作前务必确认快照/子卷路径正确，避免误删重要数据。  
-- 备份文件建议存储在非系统分区或外部设备，防止系统分区故障导致备份丢失。  
-- 定期清理无用快照，避免占用过多存储空间（可通过 `btrfs filesystem df /` 查看空间使用情况）。
+**强烈建议**：  
+- 初学者优先使用图形化/自动工具：**snapper + snap-pac**（pacman 自动前后快照）、**btrbk**（强大备份工具）、**timeshift**（简单易用）  
+- 定期验证快照能否正常挂载/读取  
+- 重要数据仍建议异地多份备份（3-2-1 原则），Btrfs 快照 ≠ 异地备份
+
+希望这份指南对你和看到的人有帮助！欢迎补充/纠错～
