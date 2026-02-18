@@ -4,7 +4,7 @@
 [profile.dev]
 debug = true                # 保留调试信息
 incremental = true          # 启用增量编译
-codegen-units = 16          # 多单元并行编译
+codegen-units = 8           # 多单元并行编译
 opt-level = 0               # 不优化（加速编译）
 
 [profile.release]
@@ -13,7 +13,8 @@ incremental = false         # 禁用增量编译（节省磁盘空间）
 codegen-units = 1           # 最大优化
 opt-level = 3               # 最高优化级别
 strip = true                # 剥离符号表
-lto = "fat"                 # 链接时优化
+# lto = "fat"               # 链接时优化
+lto = "thin"                # 链接时优化
 ```
 
 ```bash
