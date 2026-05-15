@@ -26,6 +26,8 @@ NetworkManager 是主流的网络管理工具，替代传统 iwctl，支持命�
 sudo systemctl enable --now NetworkManager
 # --ask：交互式输入 WiFi 密码（无需明文写在命令中，更安全）
 nmcli --ask d wifi connect "WiFi名称"
+
+# 或者使用 nmtui 命令图形化配置网络
 ```
 
 #### 1.2.2 手动配置（快速连接失败时）

@@ -47,7 +47,6 @@
 执行以下命令，若输出大量文件/目录，说明已进入 UEFI 模式；若提示目录不存在，则为 BIOS 模式，本教程不适用。
 
 ```bash
-
 ls /sys/firmware/efi/efivars
 ```
 
@@ -56,7 +55,6 @@ ls /sys/firmware/efi/efivars
 执行命令查看引导模式位数，需输出 64（Arch Linux 仅支持 64 位 UEFI）。
 
 ```bash
-
 cat /sys/firmware/efi/fw_platform_size
 ```
 
@@ -69,7 +67,6 @@ Arch 镜像系统默认未配置网络，需手动连接网络，确保后续包
 使用 `iwctl` 工具连接 WiFi，步骤如下：
 
 ```bash
-
 # 进入 iwctl 交互模式
 iwctl
 # 列出所有无线设备（通常为 wlan0，记好设备名）
@@ -212,10 +209,57 @@ UEFI + GPT 环境下，至少需 3 个分区，推荐规划如下：
 
 ### 6.3 分区工具操作（fdisk）
 
-以目标磁盘为 /dev/nvme0n1 为例，执行以下命令进入 cfdisk 图形化分区工具：
+以目标磁盘为 /dev/nvme0n1 为例，执行以下命令进入 cfdisk 图形化分区工具，也可以直接执行 fdisk 命令进行分区操作。
+
+（不会，就问问AI）
 
 ```bash
-cfdisk /dev/nvme0n1
+# cfdisk /dev/nvme0n1
+sudo fdisk /dev/nvme0n1
+
+欢迎使用 fdisk (util-linux 2.42)。
+更改将停留在内存中，直到您决定将更改写入磁盘。
+使用写入命令前请三思。
+
+命令(输入 m 获取帮助)：m
+
+帮助：
+
+  GPT
+   M   进入 保护/混合 MBR
+
+  常规
+   d   删除分区
+   F   列出未分区的空闲区
+   l   列出已知分区类型
+   n   添加新分区
+   p   打印分区表
+   t   更改分区类型
+   v   检查分区表
+   i   打印某个分区的相关信息
+   e   调整分区大小
+   T   discard (trim) sectors
+
+  杂项
+   m   打印此菜单
+   x   更多功能(仅限专业人员)
+
+  脚本
+   I   从 sfdisk 脚本文件加载磁盘布局
+   O   将磁盘布局转储为 sfdisk 脚本文件
+
+  保存并退出
+   w   将分区表写入磁盘并退出
+   q   退出而不保存更改
+
+  新建空磁盘标签
+   g   新建一份 GPT 分区表
+   G   新建一份空 GPT (IRIX) 分区表
+   o   新建一份的空 DOS（MBR）分区表
+   s   新建一份空 Sun 分区表
+
+
+命令(输入 m 获取帮助)：q
 ```
 
 ### 6.4 ext4 文件系统（适合新手）
@@ -233,7 +277,6 @@ mount /dev/nvme0n1p3 /mnt
 #### 6.4.2 格式化并挂载 EFI 分区
 
 ```bash
-
 mkdir -p /mnt/efi
 mkfs.fat -F32 /dev/nvme0n1p1
 mount /dev/nvme0n1p1 /mnt/efi
@@ -242,7 +285,6 @@ mount /dev/nvme0n1p1 /mnt/efi
 #### 6.4.3 格式化并启用 swap 分区
 
 ```bash
-
 mkswap /dev/nvme0n1p2
 swapon /dev/nvme0n1p2
 ```
@@ -252,7 +294,6 @@ swapon /dev/nvme0n1p2
 执行以下命令，若输出中 /mnt、/mnt/efi 有对应挂载路径，swap 分区显示 [SWAP]，说明挂载成功。
 
 ```bash
-
 lsblk
 ```
 
@@ -264,7 +305,7 @@ Btrfs 支持子卷功能，推荐将根分区划分为多个子卷，便于管�
 
 ```bash
 mkdir -p /mnt
-mkfs.btrfs -L arch /dev/nvme0n1p3
+mkfs.btrfs /dev/nvme0n1p3
 mount /dev/nvme0n1p3 /mnt
 ```
 
@@ -273,7 +314,6 @@ mount /dev/nvme0n1p3 /mnt
 推荐创建以下子卷（便于区分不同目录，快照时可选择性备份）：
 
 ```bash
-
 # 根目录子卷（对应 /）
 btrfs subvolume create /mnt/@
 # 用户目录子卷（对应 /home）
@@ -295,23 +335,17 @@ btrfs subvolume list /mnt
 临时挂载完成子卷创建后，卸载根分区，再按子卷重新挂载（设置优化参数）：
 
 ```bash
-
 # 卸载临时挂载的根分区
 umount /mnt
 
 # 挂载根目录子卷 @ 到 /mnt（启用 zstd 压缩、禁用访问时间，提升性能）
-mount -o subvol=@,compress=zstd,noatime,discard=async /dev/nvme0n1p3 /mnt
-
-# 创建各子卷对应的挂载目录
-mkdir -p /mnt/home /mnt/var/log /mnt/var/cache /mnt/var/tmp /mnt/.snapshots /mnt/kvm
-
-mount -o subvol=@home,compress=zstd,noatime,discard=async /dev/nvme0n1p3 /mnt/home
-mount -o subvol=@snapshots,compress=zstd,noatime,discard=async /dev/nvme0n1p3 /mnt/.snapshots
-
-mount -o subvol=@kvm,noatime,nodatacow,discard=async /dev/nvme0n1p3 /mnt/kvm
-mount -o subvol=@log,noatime,nodatacow,discard=async /dev/nvme0n1p3 /mnt/var/log
-mount -o subvol=@cache,noatime,nodatacow,discard=async /dev/nvme0n1p3 /mnt/var/cache
-mount -o subvol=@tmp,noatime,nodatacow,discard=async /dev/nvme0n1p3 /mnt/var/tmp
+mount -t btrfs -o subvol=@,compress=zstd,noatime,discard=async /dev/nvme0n1p3 /mnt
+mount --mkdir -t btrfs -o subvol=@home /dev/nvme0n1p3 /mnt/home
+mount --mkdir -t btrfs -o subvol=@log,nodatacow /dev/nvme0n1p3 /mnt/var/log
+mount --mkdir -t btrfs -o subvol=@cache,nodatacow /dev/nvme0n1p3 /mnt/var/cache
+mount --mkdir -t btrfs -o subvol=@tmp,nodatacow /dev/nvme0n1p3 /mnt/var/tmp
+mount --mkdir -t btrfs -o subvol=@snapshots /dev/nvme0n1p3 /mnt/.snapshots
+mount --mkdir -t btrfs -o subvol=@kvm,nodatacow /dev/nvme0n1p3 /mnt/kvm
 ```
 
 #### 6.5.4 格式化并挂载 EFI 分区和 swap 分区
@@ -375,38 +409,40 @@ networkmanager wget curl nano vim
 ```bash
 # 生成 fstab 文件（-U 按 UUID 挂载，更稳定；-p 保留挂载选项）
 genfstab -U -p /mnt >> /mnt/etc/fstab
-# 查看生成的 fstab 文件，确保内容正确
+
+# 查看生成的 fstab 文件，确保内容正确。我前面的简单挂载，这里是详细设置。
 cat /mnt/etc/fstab
+
 # Static information about the filesystems.
 # See fstab(5) for details.
 
 # <file system> <dir> <type> <options> <dump> <pass>
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/         	btrfs     	rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/         	btrfs     	rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@	0 0
 
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/home     	btrfs     	rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/home     	btrfs     	rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home	0 0
 
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/kvm		btrfs     	rw,noatime,nodatacow,ssd,discard=async,space_cache=v2,subvol=/@kvm	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/var/log  	btrfs     	rw,noatime,nodatacow,noexec,nodev,nosuid,commit=90,space_cache=v2,subvol=/@log	0 0
 
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/.snapshots	btrfs     	rw,noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@snapshots	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/var/cache	btrfs     	rw,noatime,nodatacow,noexec,nodev,nosuid,commit=120,space_cache=v2,subvol=/@cache	0 0
 
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/var/log  	btrfs     	rw,noatime,nodatacow,ssd,discard=async,space_cache=v2,subvol=/@log	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/var/tmp  	btrfs     	rw,noatime,nodatacow,noexec,nodev,nosuid,commit=120,space_cache=v2,subvol=/@tmp	0 0
 
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/var/cache	btrfs     	rw,noatime,nodatacow,ssd,discard=async,space_cache=v2,subvol=/@cache	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/.snapshots	btrfs     	rw,noatime,noexec,nodev,nosuid,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@snapshots	0 0
 
-# /dev/nvme0n1p3 LABEL=arch
-UUID=05f561c6-fb0e-4bfe-9c95-a058c6e278d5	/var/tmp      	btrfs     	rw,noatime,nodatacow,ssd,discard=async,space_cache=v2,subvol=/@tmp	0 0
+# /dev/nvme0n1p3
+UUID=73f82c34-fd2b-4ec2-a433-f9d6a194a3a3	/kvm      	btrfs     	rw,noatime,nodatacow,noexec,nodev,nosuid,commit=60,space_cache=v2,subvol=/@kvm	0 0
 
 # /dev/nvme0n1p1
-UUID=F27A-9B6E      	/efi      	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
+UUID=009B-78CA      	/efi      	vfat      	rw,noatime,nodev,nosuid,noexec,fmask=0022,dmask=0022,iocharset=utf8,shortname=mixed,utf8,errors=remount-ro	0 2
 
 # /dev/nvme0n1p2
-UUID=f7a245c3-c1f1-40a0-9b5a-02dc89945a64	none      	swap      	defaults  	0 0
+UUID=66043d54-db9e-42b2-811e-45dea6b74bf7	none      	swap      	defaults  	0 0
 ```
 
 务必检查 fstab 文件内容，若有错误，系统开机后无法正常挂载分区，将无法进入系统。
@@ -589,11 +625,11 @@ nano /etc/default/grub
 
 ```bash
 # GRUB boot loader configuration
+
 GRUB_DEFAULT=0
-GRUB_TIMEOUT=15  # 开机引导菜单停留时间（秒）
+GRUB_TIMEOUT=15
 GRUB_DISTRIBUTOR="Arch"
-# 内核启动参数（Nvidia 显卡需添加后续参数，核显可简化为 loglevel=3 quiet）
-GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet nowatchdog ibt=off nvidia.NVreg_RegistryDwords=PowerMizerEnable=0x1 nvidia.NVreg_PreserveVideoMemoryAllocations=1 modprobe.blacklist=snd_hda_codec_hdmi nvidia-drm.modeset=1 nvidia_drm.fbdev=1"
+GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet nowatchdog nvidia-drm.modeset=1 nvidia_drm.fbdev=1 nvidia.NVreg_PreserveVideoMemoryAllocations=1 nvidia.NVreg_EnableS0ixPowerManagement=0 nvidia.NVreg_EnableGpuFirmware=0"
 GRUB_CMDLINE_LINUX=""
 
 # Preload both GPT and MBR modules so that they are not missed
@@ -604,7 +640,7 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos"
 
 # Set to 'countdown' or 'hidden' to change timeout behavior,
 # press ESC key to display menu.
-GRUB_TIMEOUT_STYLE=menu  # 显示引导菜单（默认 hidden，按 ESC 才显示）
+GRUB_TIMEOUT_STYLE=menu
 
 # Uncomment to use basic console
 GRUB_TERMINAL_INPUT=console
@@ -613,18 +649,43 @@ GRUB_TERMINAL_INPUT=console
 #GRUB_TERMINAL_OUTPUT=console
 
 # The resolution used on graphical terminal
-GRUB_GFXMODE=auto  # 自动适配分辨率
+# note that you can use only modes which your graphic card supports via VBE
+# you can see them in real GRUB with the command `videoinfo'
+GRUB_GFXMODE=auto
 
 # Uncomment to allow the kernel use the same resolution used by grub
 GRUB_GFXPAYLOAD_LINUX=keep
 
+# Uncomment if you want GRUB to pass to the Linux kernel the old parameter
+# format "root=/dev/xxx" instead of "root=/dev/disk/by-uuid/xxx"
+#GRUB_DISABLE_LINUX_UUID=true
+
 # Uncomment to disable generation of recovery mode menu entries
 GRUB_DISABLE_RECOVERY=true
 
-# Uncomment to disable submenus in boot menu
-GRUB_DISABLE_SUBMENU=y
+# Uncomment and set to the desired menu colors.  Used by normal and wallpaper
+# modes only.  Entries specified as foreground/background.
+#GRUB_COLOR_NORMAL="light-blue/black"
+#GRUB_COLOR_HIGHLIGHT="light-cyan/blue"
 
-# 启用 os-prober（检测双系统，双系统必须设置为 false）
+# Uncomment one of them for the gfx desired, a image background or a gfxtheme
+#GRUB_BACKGROUND="/path/to/wallpaper"
+#GRUB_THEME="/path/to/gfxtheme"
+
+# Uncomment to get a beep at GRUB start
+#GRUB_INIT_TUNE="480 440 1"
+
+# Uncomment to make GRUB remember the last selection. This requires
+# setting 'GRUB_DEFAULT=saved' above.
+#GRUB_SAVEDEFAULT=true
+
+# Uncomment to disable submenus in boot menu
+#GRUB_DISABLE_SUBMENU=y
+
+# Probing for other operating systems is disabled for security reasons. Read
+# documentation on GRUB_DISABLE_OS_PROBER, if still want to enable this
+# functionality install os-prober and uncomment to detect and include other
+# operating systems.
 GRUB_DISABLE_OS_PROBER=false
 ```
 
