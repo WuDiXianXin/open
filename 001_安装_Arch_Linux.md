@@ -375,9 +375,9 @@ lsblk
 
 ```bash
 # 安装基础包（按需调整，解释如下）
-pacstrap /mnt base base-devel \
+pacstrap -K /mnt base base-devel \
 linux-zen linux-zen-headers linux-firmware \
-dosfstools e2fsprogs ntfs-3g exfatprogs btrfs-progs \
+dosfstools e2fsprogs exfatprogs btrfs-progs \
 efibootmgr os-prober grub \
 networkmanager wget curl nano vim
 ```
@@ -400,7 +400,7 @@ networkmanager wget curl nano vim
 
 - wget、curl：下载工具；nano：文本编辑器
 
-注：若为双系统（需识别 Windows），需保留 ntfs-3g、os-prober；单系统可省略。
+注：若为双系统（需识别 Windows），需保留 os-prober；单系统可省略。
 
 ## 八、配置系统挂载信息（fstab）
 
@@ -592,7 +592,7 @@ GRUB 是 Linux 常用的引导器，需安装并配置才能让系统正常开�
 ```bash
 pacman -S --needed grub
 # 双系统必须安装（已在第七步安装，此处可忽略）
-# pacman -S efibootmgr os-prober ntfs-3g
+# pacman -S efibootmgr os-prober
 ```
 
 ### 10.2 安装 GRUB 到 EFI 分区
