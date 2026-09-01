@@ -1,7 +1,8 @@
 # 安装 Arch Linux 详细教程
 
+> [!NOTE]
 > By WuDiXianXin
-
+>> [!TIP]
 >> 参考文章：[泠熙的博客](https://lingxi9374.github.io/posts/教程/archinst/)
 
 ---

@@ -1,7 +1,8 @@
 # 配置 Arch Linux
 
+> [!NOTE]
 > By WuDiXianXin
-
+>> [!TIP]
 >> 前置说明：以下配置基于已安装完成的 Arch Linux 基础系统，需以具备 sudo 权限的普通用户执行；所有操作均在终端中完成，确保已退出 chroot 环境并正常进入系统。
 
 ---
@@ -629,7 +630,7 @@ wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle  # 切换静音/取消静音
 ### 12.2 常见问题排查
 
 | 问题现象 | 排查方案 |
-|----------|----------|
+|---|---|
 | fcitx5 无法唤醒 | 1. 检查环境变量是否配置正确（/etc/environment 或 ~/.profile）；<br>2. 重启会话/系统；<br>3. 执行 `fcitx5 -d` 后台启动输入法。 |
 | NVIDIA 驱动失效 | 1. 确认已安装对应内核头文件；<br>2. 执行 `sudo dkms autoinstall` 重新编译驱动；<br>3. 检查 GRUB 内核参数是否包含 `nvidia-drm.modeset=1`。 |
 | 音频无声音 | 1. 检查 PipeWire 服务是否运行（`systemctl --user status pipewire`）；<br>2. `pavucontrol` 确认默认输出设备正确；<br>3. 安装对应声卡固件（sof-firmware）。 |
